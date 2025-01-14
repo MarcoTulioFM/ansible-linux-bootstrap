@@ -26,11 +26,3 @@
     name: code
     state: present
 
-- name: Remover diretorio .vscode
-  ansible.builtin.file:
-    path: '{{ ansible_env.PWD }}/{{ vscode_path }}'
-    state: absent
-
-- name: Configs Vscode
-  ansible.builtin.command:
-    cmd: rclone copy fonse:/vscode/ {{ ansible_env.PWD }}/{{ vscode_path }}
