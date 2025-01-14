@@ -1,0 +1,67 @@
+- name: APT | Update Cache
+  ansible.builtin.apt:
+    update_cache: yes
+  tags: debian
+
+- name: APT | Install Packages Apt
+  ansible.builtin.apt:
+    name: '{{ item }}'
+    state: present
+  with_items:
+    - '{{ debian_package }}'
+  tags: debian
+
+- name: SSH configure
+  import_tasks: ssh.yaml
+  tags:
+    - ssh
+    - debian
+
+- name: Flatpak install packages
+  import_tasks: flatpak.yaml
+  tags:
+    - flatpak_debian
+    - flatpak
+    - debian
+
+- name: Install terraform
+  import_tasks: ./terraform.yaml
+  tags:
+    - terraform
+    - terraform_debian
+    - debian
+
+- name: Install Docker
+  import_tasks: docker.yaml
+  tags:
+    - docker
+    - docker_debian
+    - debian
+
+- name: Install and Config RCLONE
+  import_tasks: rclone.yaml
+  tags:
+    - rclone
+    - rclone_debian
+    - debian
+
+- name: Install tailscale
+  import_tasks: tailscale.yaml
+  tags:
+    - tailscale
+    - tailscale_debian
+    - debian
+
+- name: Install and Configure vscode
+  import_tasks: vscode.yaml
+  tags:
+    - vscode
+    - vscode_debian
+    - debian
+
+- name: Install Zen and Configuration
+  import_tasks: zen.yaml
+  tags:
+    - browser
+    - browser_debian
+    - debian

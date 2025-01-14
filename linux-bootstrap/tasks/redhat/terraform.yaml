@@ -1,0 +1,15 @@
+- name: Install repositories
+  ansible.builtin.dnf:
+    name: dnf-plugins-core
+    state: present
+
+- name: Adicionar repositório da HashiCorp
+  ansible.builtin.get_url:
+    url: https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+    dest: /etc/yum.repos.d/hashicorp.repo
+    mode: '0644'
+
+- name: install terraform
+  ansible.builtin.dnf:
+    name: terraform
+    state: present

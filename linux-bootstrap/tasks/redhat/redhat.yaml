@@ -1,0 +1,61 @@
+- name: dnf | Update Cache
+  ansible.builtin.dnf:
+    update_cache: yes
+  when: ansible_pkg_mgr == "dnf"
+
+- name: dnf | Install Packages dnf
+  ansible.builtin.dnf:
+    name: '{{ item }}'
+    state: present
+  when: ansible_pkg_mgr == "dnf"
+  with_items:
+    - '{{ redhat_package }}'
+  tags: redhat
+
+- name: SSH configure
+  import_tasks: ssh.yaml
+  tags:
+    - ssh
+    - redhat
+
+- name: Flatpak install packages
+  import_tasks: flatpak.yaml
+  tags:
+    - flatpak_redhat
+    - flatpak
+    - redhat
+
+- name: Install Docker
+  import_tasks: docker.yaml
+  tags:
+    - docker
+    - docker_redhat
+    - redhat
+
+- name: Install and Config RCLONE
+  import_tasks: rclone.yaml
+  tags:
+    - rclone
+    - rclone_redhat
+    - redhat
+
+- name: Install Terraform DNF
+  import_tasks: ./terraform.yaml
+  tags:
+    - terraform
+    - terraform_redhat
+    - redhat
+
+- name: Install tailscale
+  import_tasks: tailscale.yaml
+  tags:
+    - tailscale
+    - tailscale_redhat
+    - redhat
+
+- name: Install Zen and Configuration
+  import_tasks: zen.yaml
+  tags:
+    - browser
+    - browser_redhat
+    - redhat

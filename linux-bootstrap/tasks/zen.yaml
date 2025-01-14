@@ -1,0 +1,8 @@
+- name: Delete Archive and Paste .zen
+  ansible.builtin.file:
+    path: '{{ ansible_env.PWD }}/{{ zen_path }}'
+    state: absent
+
+- name: Zen Browser config
+  ansible.builtin.command:
+    cmd: rclone copy fonse:/.zen {{ ansible_env.PWD }}/{{ zen_path }} --config '{{ ansible_env.PWD }}/{{ rclone_path }}/rclone.conf'

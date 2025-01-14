@@ -1,0 +1,29 @@
+- name: Importar chave GPG da Microsoft
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+
+- name: Adicionar repositório do Visual Studio Code usando template
+  ansible.builtin.template:
+    src: templates/vscode_redhat.repo.j2
+    dest: /etc/yum.repos.d/vscode.repo
+    mode: '0644'
+
+- name: Atualizar cache do repositório
+  ansible.builtin.command:
+    cmd: dnf makecache
+    creates: /var/cache/dnf
+
+- name: Instalar Visual Studio Code
+  ansible.builtin.dnf:
+    name: code
+    state: present
+
+- name: Remover diretorio .vscode
+  ansible.builtin.file:
+    path: '{{ ansible_env.PWD }}/{{ vscode_path }}'
+    state: absent
+
+- name: Configs Vscode
+  ansible.builtin.command:
+    cmd: rclone copy fonse:/vscode/ {{ ansible_env.PWD }}/{{ vscode_path }}

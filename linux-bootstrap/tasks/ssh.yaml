@@ -1,0 +1,14 @@
+- name: Adicionar chave pública ao authorized_keys
+  ansible.builtin.lineinfile:
+    path: /home/zezepopo/.ssh/authorized_keys
+    line: "{{ lookup('file', 'ssh/geral.pub') }}"
+    owner: '{{ user }}'
+    group: '{{ user }}'
+    mode: '0600'
+    create: yes
+
+- name: Mandar Chaves para Authenticação
+  ansible.builtin.copy:
+    src: ssh/
+    dest: '{{ ansible_env.PWD }}/.ssh/'
+    mode: '0600'

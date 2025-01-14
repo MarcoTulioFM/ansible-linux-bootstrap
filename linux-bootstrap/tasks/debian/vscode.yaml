@@ -1,0 +1,36 @@
+- name: Instalar dependências necessárias
+  ansible.builtin.package:
+    name:
+      - software-properties-common
+      - apt-transport-https
+      - wget
+    state: present
+
+- name: Baixar e adicionar chave GPG da Microsoft
+  ansible.builtin.get_url:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    dest: /etc/apt/trusted.gpg.d/microsoft.asc
+    mode: '0644'
+
+- name: Adicionar repositório do Visual Studio Code
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+    state: present
+
+- name: Atualizar cache do APT após adicionar repositório
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Instalar Visual Studio Code
+  ansible.builtin.package:
+    name: code
+    state: present
+
+- name: Remover diretorio .vscode
+  ansible.builtin.file:
+    path: '{{ ansible_env.PWD }}/{{ vscode_path }}'
+    state: absent
+
+- name: Configs Vscode
+  ansible.builtin.command:
+    cmd: rclone copy fonse:/vscode/ {{ ansible_env.PWD }}/{{ vscode_path }}

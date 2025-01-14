@@ -1,0 +1,27 @@
+- name: Verificar se o rclone está instalado
+  ansible.builtin.command:
+    cmd: rclone --version
+  register: rclone_check
+  ignore_errors: yes
+
+- name: Definir se o rclone deve ser instalado
+  ansible.builtin.set_fact:
+    rclone_install: '{{ rclone_check.rc != 0 }}'
+
+
+- name: Buscar Script URL rclone
+  ansible.builtin.get_url:
+    url: https://rclone.org/install.sh
+    dest: '{{ past_script }}/rclone.sh'
+    mode: 0755
+  when: rclone_install
+
+- name: Informar que o rclone já está instalado
+  ansible.builtin.debug:
+    msg: "RCLONE JÁ ESTÁ INSTALADO"
+  when: not rclone_install
+
+- name: Importar configuração do rclone
+  ansible.builtin.copy:
+    src: rclone/rclone.conf
+    dest: '{{ ansible_env.PWD }}/{{ rclone_path }}'

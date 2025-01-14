@@ -1,0 +1,8 @@
+---
+- name: Debian Install Packages
+  import_tasks: debian/debian.yaml
+  when: ansible_pkg_mgr == "apt"
+
+- name: RedHat Install Packages
+  import_tasks: redhat/redhat.yaml
+  when: ansible_pkg_mgr == "dnf"
