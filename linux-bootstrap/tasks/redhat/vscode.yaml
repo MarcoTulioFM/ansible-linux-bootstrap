@@ -1,20 +1,39 @@
+- name: Verificar se o Visual Studio Code está instalado
+  ansible.builtin.command:
+    cmd: code --version
+  register: vscode_check
+  ignore_errors: yes
+
+- name: Definir se o Visual Studio Code deve ser instalado
+  ansible.builtin.set_fact:
+    install_vscode: "{{ vscode_check.rc != 0 }}"
+
 - name: Importar chave GPG da Microsoft
   ansible.builtin.rpm_key:
     state: present
     key: https://packages.microsoft.com/keys/microsoft.asc
+  when: install_vscode
 
 - name: Adicionar repositório do Visual Studio Code usando template
   ansible.builtin.template:
     src: templates/vscode_redhat.repo.j2
     dest: /etc/yum.repos.d/vscode.repo
     mode: '0644'
+  when: install_vscode
 
 - name: Atualizar cache do repositório
   ansible.builtin.command:
     cmd: dnf makecache
     creates: /var/cache/dnf
+  when: install_vscode
 
 - name: Instalar Visual Studio Code
   ansible.builtin.dnf:
     name: code
     state: present
+  when: install_vscode
+
+- name: Informar que o Visual Studio Code já está instalado
+  ansible.builtin.debug:
+    msg: "O Visual Studio Code já está instalado"
+  when: not install_vscode
