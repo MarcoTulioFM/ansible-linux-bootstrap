@@ -1,15 +1,33 @@
-- name: Install repositories
+- name: Verificar se o Terraform está instalado
+  ansible.builtin.command:
+    cmd: terraform --version
+  register: terraform_check
+  ignore_errors: yes
+
+- name: Definir se o Terraform deve ser instalado
+  ansible.builtin.set_fact:
+    install_terraform: "{{ terraform_check.rc != 0 }}"
+
+- name: Instalar repositórios necessários (dnf-plugins-core)
   ansible.builtin.dnf:
     name: dnf-plugins-core
     state: present
+  when: install_terraform
 
 - name: Adicionar repositório da HashiCorp
   ansible.builtin.get_url:
     url: https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
     dest: /etc/yum.repos.d/hashicorp.repo
     mode: '0644'
+  when: install_terraform
 
-- name: install terraform
+- name: Instalar Terraform
   ansible.builtin.dnf:
     name: terraform
     state: present
+  when: install_terraform
+
+- name: Informar que o Terraform já está instalado
+  ansible.builtin.debug:
+    msg: "Terraform já está instalado"
+  when: not install_terraform
