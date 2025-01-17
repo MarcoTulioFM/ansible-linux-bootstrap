@@ -1,34 +1,53 @@
+- name: Verificar se o Terraform está instalado
+  ansible.builtin.command:
+    cmd: terraform --version
+  register: terraform_check
+  ignore_errors: yes
+
+- name: Definir se o Terraform deve ser instalado
+  ansible.builtin.set_fact:
+    install_terraform: "{{ terraform_check.rc != 0 }}"
+
 - name: Baixar chave GPG do HashiCorp
   ansible.builtin.get_url:
     url: https://apt.releases.hashicorp.com/gpg
     dest: /tmp/hashicorp.gpg
   register: gpg_download
+  when: install_terraform
 
 - name: Garantir que o diretório de keyrings existe
   ansible.builtin.file:
     path: /usr/share/keyrings
     state: directory
     mode: '0755'
+  when: install_terraform
 
 - name: Converter chave GPG para formato keyring
   ansible.builtin.command:
     cmd: 'gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg /tmp/hashicorp.gpg'
   args:
     creates: /usr/share/keyrings/hashicorp-archive-keyring.gpg
-  when: gpg_download is changed
+  when: install_terraform and gpg_download is changed
 
 - name: Adicionar repositório do HashiCorp
   ansible.builtin.copy:
     content: "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com {{ ansible_lsb.codename }} main\n"
     dest: /etc/apt/sources.list.d/hashicorp.list
   register: repo_add
+  when: install_terraform
 
 - name: Atualizar cache do APT
   ansible.builtin.apt:
     update_cache: yes
-  when: repo_add is changed
+  when: install_terraform and repo_add is changed
 
 - name: Instalar Terraform
   ansible.builtin.apt:
     name: terraform
     state: present
+  when: install_terraform
+
+- name: Informar que o Terraform já está instalado
+  ansible.builtin.debug:
+    msg: "Terraform já está instalado"
+  when: not install_terraform
