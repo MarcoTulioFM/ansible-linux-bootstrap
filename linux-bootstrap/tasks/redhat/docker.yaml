@@ -1,0 +1,40 @@
+- name: Verificar se o Docker está instalado
+  ansible.builtin.command:
+    cmd: docker --version
+  register: docker_check
+  ignore_errors: yes
+
+- name: Definir se o docker deve ser instalado
+  ansible.builtin.set_fact:
+    install_docker: '{{ docker_check.rc != 0}}'
+
+- name: Instalar o plugin dnf-plugins-core
+  ansible.builtin.dnf:
+    name: dnf-plugins-core
+    state: present
+  become: yes
+  when: install_docker
+
+- name: Adicionar Repositorio Docker
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/rhel/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: "0644"
+  when: install_check
+
+- name: Instalar Docker e seus componentes
+  ansible.builtin.dnf:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+  become: yes
+  when: install_docker
+
+- name: Informar que o Docker já está instalado
+  ansible.builtin.debug:
+    msg: "Docker já está instalado"
+  when: not install_docker

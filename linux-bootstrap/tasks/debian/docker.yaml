@@ -1,0 +1,71 @@
+- name: Verificar se o Docker está instalado
+  ansible.builtin.command:
+    cmd: docker --version
+  register: docker_check
+  ignore_errors: yes
+
+- name: Definir se o Docker deve ser instalado
+  ansible.builtin.set_fact:
+    install_docker: "{{ docker_check.rc != 0 }}"
+
+- name: Atualizar repositórios
+  ansible.builtin.apt:
+    update_cache: yes
+  become: yes
+  when: install_docker
+
+- name: Instalar dependências necessárias
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+    state: present
+  become: yes
+  when: install_docker
+
+- name: Criar diretório para a chave GPG
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: yes
+  when: install_docker
+
+- name: Baixar chave GPG oficial do Docker
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+  become: yes
+  when: install_docker
+
+- name: Adicionar repositório do Docker
+  ansible.builtin.shell:
+    cmd: |
+      echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+      ${{ distro_release | default(ansible_lsb.codename) }} stable" > /etc/apt/sources.list.d/docker.list
+  become: yes
+  when: install_docker
+
+- name: Atualizar repositórios com o repositório do Docker
+  ansible.builtin.apt:
+    update_cache: yes
+  become: yes
+  when: install_docker
+
+- name: Instalar Docker e seus componentes
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+  become: yes
+  when: install_docker
+
+- name: Informar que o Docker já está instalado
+  ansible.builtin.debug:
+    msg: "Docker já está instalado"
+  when: not install_docker

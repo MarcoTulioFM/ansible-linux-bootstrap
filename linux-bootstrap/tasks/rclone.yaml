@@ -21,7 +21,13 @@
     msg: "RCLONE JÁ ESTÁ INSTALADO"
   when: not rclone_install
 
+- name: Instalar RCLONE
+  ansible.builtin.command:
+    cmd: bash '{{ path_script | default("/tmp")}}/rclone.sh'
+  when: rclone_install
+
+
 - name: Importar configuração do rclone
   ansible.builtin.copy:
     src: rclone/rclone.conf
-    dest: '{{ ansible_env.PWD }}/{{ rclone_path }}'
+    dest: '{{ ansible_env.PWD }}/{{ rclone_path }}/rclone.conf'

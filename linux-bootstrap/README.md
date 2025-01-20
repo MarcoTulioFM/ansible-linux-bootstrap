@@ -93,6 +93,7 @@ flatpak_packages: []
 zen_path: ""
 vscode_path: ""
 rclone_path: ""
+distro_release: ""
 ```
 
 ## Inventário de Exemplo
