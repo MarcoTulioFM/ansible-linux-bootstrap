@@ -14,7 +14,6 @@ Esta role Ansible foi criada para automatizar a configuração inicial e instala
   - Visual Studio Code
   - Terraform
   - Tailscale
-  - Zen Browser
 - **Configuração de SSH:**
   - Chaves públicas e privadas
   - Pastas de configuração personalizadas
@@ -38,15 +37,18 @@ linux-bootstrap/
 │   │   ├── debian.yaml   # Tasks específicas para Debian
 │   │   ├── terraform.yaml
 │   │   └── vscode.yaml
+    |   └── docker.yaml
 │   ├── redhat/
-│       ├── redhat.yaml   # Tasks específicas para Red Hat
-│       ├── terraform.yaml
-│       ├── docker.yaml
-│       ├── flatpak.yaml
-│       ├── rclone.yaml
-│       ├── ssh.yaml
-│       ├── tailscale.yaml
-│       └── zen.yaml
+│   |    ├── redhat.yaml   # Tasks específicas para Red Hat
+│   |    ├── terraform.yaml
+│   |    ├── docker.yaml
+|   |    └── vscode.yaml
+|   |__ 
+|   |   ├── flatpak.yaml
+|   │   ├── rclone.yaml
+|   │   ├── ssh.yaml
+|   │   ├── tailscale.yaml
+
 ├── templates/
 │   └── ...               # Arquivos de templates (caso aplicável)
 ├── tests/
@@ -90,8 +92,6 @@ flatpak_packages: []
 
 # Caminhos personalizados para ferramentas
 # Exemplo: ".var/app/io.github.zen_browser.zen/.zen"
-zen_path: ""
-vscode_path: ""
 rclone_path: ""
 distro_release: ""
 arch: ""
