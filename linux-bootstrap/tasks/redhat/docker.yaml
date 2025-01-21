@@ -34,6 +34,13 @@
   become: yes
   when: install_docker
 
+- name: Adicionar usuario ao grupo Docker
+  ansible.builtin.user:
+    user: '{{ user | trim | default(ansible_user )}}'
+    append: true
+    groups:
+      - docker
+
 - name: Informar que o Docker já está instalado
   ansible.builtin.debug:
     msg: "Docker já está instalado"

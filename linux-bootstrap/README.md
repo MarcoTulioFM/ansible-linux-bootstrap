@@ -94,6 +94,7 @@ zen_path: ""
 vscode_path: ""
 rclone_path: ""
 distro_release: ""
+arch: ""
 ```
 
 ## Inventário de Exemplo

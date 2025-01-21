@@ -40,12 +40,12 @@
   when: install_docker
 
 - name: Adicionar repositório do Docker
-  ansible.builtin.shell:
-    cmd: |
-      echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-      ${{ distro_release | default(ansible_lsb.codename) }} stable" > /etc/apt/sources.list.d/docker.list
-  become: yes
-  when: install_docker
+  ansible.builtin.copy:
+    content: |
+      deb [arch={{ arch | default(ansible_architecture) }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian {{ distro_release | default(ansible_lsb.codename) }} stable
+    dest: /etc/apt/sources.list.d/docker.list
+  become: true
+
 
 - name: Atualizar repositórios com o repositório do Docker
   ansible.builtin.apt:
@@ -64,6 +64,13 @@
     state: present
   become: yes
   when: install_docker
+
+- name: Adicionar usuario ao grupo Docker
+  ansible.builtin.user:
+    user: '{{ user | trim | default(ansible_user )}}'
+    append: true
+    groups:
+      - docker
 
 - name: Informar que o Docker já está instalado
   ansible.builtin.debug:

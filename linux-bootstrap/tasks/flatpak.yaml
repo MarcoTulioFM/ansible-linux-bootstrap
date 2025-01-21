@@ -3,14 +3,10 @@
     name: 'flathub'
     state: present
     flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
-  tags:
-    - flatpak
 
 - name: Flatpak install packages
   community.general.flatpak:
     name: '{{ item }}'
     state: present
-  tags:
-    - flatpak
   with_items:
     - '{{ flatpak_packages }}'

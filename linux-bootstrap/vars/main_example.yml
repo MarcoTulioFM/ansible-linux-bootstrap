@@ -11,3 +11,5 @@ flatpak_packages: []
 rclone_path:
 
 distro_release:
+
+arch:
