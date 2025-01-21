@@ -26,7 +26,7 @@
 
 - name: Adicionar repositório do Visual Studio Code
   ansible.builtin.apt_repository:
-    repo: "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+    repo: "deb [arch={{ arch | default(ansible_architecture) }} ] https://packages.microsoft.com/repos/vscode stable main"
     state: present
   when: install_vscode
 
